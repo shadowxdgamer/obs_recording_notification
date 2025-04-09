@@ -23,7 +23,6 @@ A modern, Shadowplay-style notification for OBS Studio that shows when recording
   - Supports multiple event types:
     - Recording start/stop
     - Replay buffer saves
-  - No notification loops
   - Lightweight and efficient
   - Always stays on top of other windows
   - Thread-safe implementation
