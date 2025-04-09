@@ -68,41 +68,58 @@ class Application(tk.Frame):
             self.after(30, self.fade_out)
         else:
             self.is_animating = False
+            # Clear notification state after fade out completes
+            if hasattr(self, 'notification_type'):
+                delattr(self, 'notification_type')
+                delattr(self, 'notification_state')
 
 
     def check_loop_status(self):
-        global window_start, label, canvas, first_event
-        
-        if not first_event and window_start != self.last_state and not self.is_animating:
-            self.is_animating = True
-            self.last_state = window_start
+        if not hasattr(self, 'notification_type') or self.is_animating:
+            self.after(100, self.check_loop_status)
+            return
             
-            if window_start:
+        self.is_animating = True
+        
+        if self.notification_type == 'recording':
+            if self.notification_state == 'started':
                 label.config(text="Recording Started")
                 canvas.delete("all")
-                # Modern pulsing REC indicator
+                # Red recording indicator
                 canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
                 canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
-                canvas.create_oval(22, 22, 8, 8, fill='#ff3333') # Vibrant red
-            else:
-                label.config(text="Recording Saved") 
+                canvas.create_oval(22, 22, 8, 8, fill='#ff3333')
+            else:  # saved
+                label.config(text="Recording Saved")
                 canvas.delete("all")
-                # Modern checkmark indicator
+                # Green checkmark
                 canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
                 canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
                 canvas.create_line(10, 15, 15, 20, fill='#00cc00', width=3)
                 canvas.create_line(15, 20, 22, 10, fill='#00cc00', width=3)
-            
-            self.fade_in()
         
+        elif self.notification_type == 'replay':
+            label.config(text="Replay Saved") 
+            canvas.delete("all")
+            # Blue replay indicator
+            canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
+            canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
+            canvas.create_oval(22, 22, 8, 8, fill='#0099ff')
+        
+        self.fade_in()
         self.after(100, self.check_loop_status)
     
  
+# Global reference to application instance
+app_instance = None
+
 def runtk():  # runs in background thread
-    app = Application()                        
-    app.master.title('OBS Recording Notification')  
-    app.check_loop_status()
-    app.mainloop()
+    global app_instance
+    app_instance = Application()                        
+    app_instance.master.title('OBS Recording Notification')  
+    app_instance.check_loop_status()
+    app_instance.mainloop()
+    app_instance = None  # Clear reference when window closes
         
     
 thd = threading.Thread(target=runtk)   # gui thread
@@ -115,22 +132,39 @@ thd.daemon = True  # background thread will exit if main thread exits
 class Data:
     OutputDir = None
 
-# this function responds to events inside OBS
 def frontend_event_handler(data):
-    global window_start, first_event
+    global window_start, first_event, app_instance
 
     if data == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
         if not thd.is_alive():
             thd.start()
         return
 
-    if data == obs.OBS_FRONTEND_EVENT_RECORDING_STARTING:
-        window_start = True
-        first_event = False
+    if not app_instance or not hasattr(app_instance, 'master') or not app_instance.master.winfo_exists():
+        return
 
-    if data == obs.OBS_FRONTEND_EVENT_RECORDING_STOPPED:
-        window_start = False
+    if data == obs.OBS_FRONTEND_EVENT_RECORDING_STARTING:
         first_event = False
+        app_instance.after(0, lambda: (
+            setattr(app_instance, 'notification_type', 'recording'),
+            setattr(app_instance, 'notification_state', 'started'),
+            app_instance.check_loop_status()
+        ))
+
+    elif data == obs.OBS_FRONTEND_EVENT_RECORDING_STOPPED:
+        first_event = False
+        app_instance.after(0, lambda: (
+            setattr(app_instance, 'notification_type', 'recording'),
+            setattr(app_instance, 'notification_state', 'saved'),
+            app_instance.check_loop_status()
+        ))
+
+    elif data == obs.OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED:
+        app_instance.after(0, lambda: (
+            setattr(app_instance, 'notification_type', 'replay'),
+            setattr(app_instance, 'notification_state', 'saved'),
+            app_instance.check_loop_status()
+        ))
 
 
 
