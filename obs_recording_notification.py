@@ -18,26 +18,37 @@ class Application(tk.Frame):
         
         # Position at top-right of screen
         screen_width = self.master.winfo_screenwidth()
-        self.master.geometry(f'180x40+{screen_width-190}+10')
+        self.master.geometry(f'200x50+{screen_width-210}+20')
         
         self.master.attributes('-alpha', 0.0) # Start hidden
-        self.master.configure(bg='#1a1a1a') # Dark background
+        self.master.configure(bg='#0f0f0f') # Darker background
         self.master.overrideredirect(1) # Borderless window
         self.master.attributes('-topmost', True) # Always on top
+
+        # Add rounded corners effect
+        self.master.attributes('-transparentcolor', '#0f0f0f')
+        self.config(bg='#0f0f0f')
 
         self.is_animating = False
         self.last_state = None
 
+        # Modern container frame with subtle border
+        container = Frame(self, bg='#252525', bd=0, highlightthickness=1, 
+                         highlightbackground='#404040', highlightcolor='#404040')
+        container.pack(padx=5, pady=5, fill=BOTH, expand=True)
+
         global canvas
-        canvas = Canvas(self, height=25, width=30, bg='#1a1a1a', highlightthickness=0)
-        canvas.create_oval(21, 21, 2, 3, outline='#333333', fill='#333333')
-        canvas.create_oval(20, 20, 4, 5, fill='#00a800', outline='') # Green REC indicator
+        canvas = Canvas(container, height=30, width=30, bg='#252525', highlightthickness=0)
+        # Modern pulsing REC indicator with shadow
+        canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
+        canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
+        canvas.create_oval(22, 22, 8, 8, fill='#ff3333') # Vibrant red
         canvas.grid(row=0, column=0, padx=(10,5), pady=5)
 
         global label
-        label = Label(self, text="Recording Started", font=('Helvetica', 10))
-        label.grid(row=0, column=1, padx=(0,10), pady=5)
-        label.config(bg="#1a1a1a", fg="white")
+        label = Label(container, text="Recording Started", font=('Segoe UI', 11, 'bold'))
+        label.grid(row=0, column=1, padx=(0,15), pady=5)
+        label.config(bg="#252525", fg="#ffffff")
 
 
     def fade_in(self):
@@ -69,13 +80,18 @@ class Application(tk.Frame):
             if window_start:
                 label.config(text="Recording Started")
                 canvas.delete("all")
-                canvas.create_oval(21, 21, 2, 3, outline='#333333', fill='#333333')
-                canvas.create_oval(20, 20, 4, 5, fill='#00a800', outline='')
+                # Modern pulsing REC indicator
+                canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
+                canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
+                canvas.create_oval(22, 22, 8, 8, fill='#ff3333') # Vibrant red
             else:
-                label.config(text="Recording Stopped") 
+                label.config(text="Recording Saved") 
                 canvas.delete("all")
-                canvas.create_oval(21, 21, 2, 3, outline='#333333', fill='#333333')
-                canvas.create_oval(20, 20, 4, 5, fill='#ff0000', outline='')
+                # Modern checkmark indicator
+                canvas.create_oval(25, 25, 5, 5, outline='#000000', fill='#000000')
+                canvas.create_oval(24, 24, 6, 6, outline='#404040', fill='#252525')
+                canvas.create_line(10, 15, 15, 20, fill='#00cc00', width=3)
+                canvas.create_line(15, 20, 22, 10, fill='#00cc00', width=3)
             
             self.fade_in()
         
