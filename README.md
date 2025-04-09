@@ -39,7 +39,7 @@ A modern, Shadowplay-style notification for OBS Studio that shows when recording
 
 ## Preview
 
-![Recording Started](Instructions/recording.png)
+![Recording Started](Instructions/recording.PNG)
 ![Recording Saved](Instructions/recording_saved.png)
 
 ## Notes
