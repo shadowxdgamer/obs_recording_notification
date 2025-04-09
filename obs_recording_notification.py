@@ -8,6 +8,7 @@ import obspython as obs
 window = None
 
 window_start = False
+first_event = True  # Track if we've processed first recording event
 
 class Application(tk.Frame):              
     def __init__(self, master=None):
@@ -59,11 +60,9 @@ class Application(tk.Frame):
 
 
     def check_loop_status(self):
-        global window_start
-        global label
-        global canvas
+        global window_start, label, canvas, first_event
         
-        if window_start != self.last_state and not self.is_animating:
+        if not first_event and window_start != self.last_state and not self.is_animating:
             self.is_animating = True
             self.last_state = window_start
             
@@ -102,17 +101,20 @@ class Data:
 
 # this function responds to events inside OBS
 def frontend_event_handler(data):
-    global window_start
+    global window_start, first_event
 
     if data == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
         if not thd.is_alive():
             thd.start()
+        return
 
     if data == obs.OBS_FRONTEND_EVENT_RECORDING_STARTING:
         window_start = True
+        first_event = False
 
     if data == obs.OBS_FRONTEND_EVENT_RECORDING_STOPPED:
         window_start = False
+        first_event = False
 
 
 
