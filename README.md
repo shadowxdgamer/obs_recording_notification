@@ -2,7 +2,7 @@
 
 A modern, Shadowplay-style notification for OBS Studio that shows when recording starts and stops.
 
-![Notification Preview](Instructions/recpopup.PNG)
+![Notification Preview](Instructions/recpopup.png)
 
 ## Features
 
@@ -39,11 +39,17 @@ A modern, Shadowplay-style notification for OBS Studio that shows when recording
 
 ## Preview
 
-![Recording Started](Instructions/recording.PNG)
-![Recording Saved](Instructions/recording_saved.PNG)
+![Recording Started](Instructions/recording.png)
+![Recording Saved](Instructions/recording_saved.png)
 
 ## Notes
 
 - If you encounter any issues, restart OBS and check the script console
 - The notification appears in the top-right corner by default
 - Tested on Windows 10
+
+## Support Me
+
+If you like what I do and want to support me, you can buy me a coffee!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/shadowxdgamer)
