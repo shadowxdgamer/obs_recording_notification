@@ -10,16 +10,23 @@ A modern, Shadowplay-style notification for OBS Studio that shows when recording
   - Sleek dark theme with subtle borders
   - Rounded corners effect
   - Professional typography
-  - Vibrant indicator colors (red for recording, green checkmark when saved)
+  - Color-coded indicators:
+    - Red for recording started
+    - Green checkmark for recording saved
+    - Blue for replay saved
 
 - **Smooth Animations**
   - Elegant fade in/out transitions
   - 3 second display duration
 
 - **Reliable Operation**
-  - Only shows for actual recording events
+  - Supports multiple event types:
+    - Recording start/stop
+    - Replay buffer saves
+  - No notification loops
   - Lightweight and efficient
   - Always stays on top of other windows
+  - Thread-safe implementation
 
 ## Installation
 
@@ -41,6 +48,7 @@ A modern, Shadowplay-style notification for OBS Studio that shows when recording
 
 ![Recording Started](Instructions/recording.PNG)
 ![Recording Saved](Instructions/recording_saved.png)
+![Replay Saved](Instructions/replay_saved.png)
 
 ## Notes
 
