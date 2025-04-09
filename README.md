@@ -2,7 +2,7 @@
 
 A modern, Shadowplay-style notification for OBS Studio that shows when recording starts and stops.
 
-![Notification Preview](Instructions/recording.PNG)
+![Notification Preview](Instructions/recpopup.PNG)
 
 ## Features
 
